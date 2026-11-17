@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="description" content="比价助手 - 奶粉、纸尿裤、加油站油价，多平台价格一站对比">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>喵喵生活 · 比价</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 顶部品牌栏（所有页面共享） -->
+    <header class="app-header" id="app-header">
+      <div class="header-top">
+        <div class="brand" id="brand">
+          <span class="brand-logo">🐱</span>
+          <span class="brand-text">喵喵生活</span>
+        </div>
+        <div class="header-subtitle" id="header-subtitle">多平台比价 · 省钱每一天</div>
+      </div>
+    </header>
+
+    <!-- 主内容区 -->
+    <main id="main" class="main home-main">
+
+      <!-- ========== 首页：只有大类入口 ========== -->
+      <section class="page active" id="page-home">
+        <div class="home-hero">
+          <div class="home-hero-title">今天想比什么价？</div>
+          <div class="home-hero-sub">选择品类，查看各平台价格</div>
+        </div>
+        <div class="entry-grid" id="entry-grid"></div>
+        <div class="home-footnote">喵喵生活 · 比价数据均由你手动录入并保存在本机 · 以实际平台为准</div>
+      </section>
+
+      <!-- ========== 分类列表页 ========== -->
+      <section class="page" id="page-list">
+        <button class="back-btn" id="list-back">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          返回
+        </button>
+        <div class="list-heading">
+          <h1 id="list-title">奶粉比价</h1>
+          <div class="heading-actions">
+            <button class="compare-fab" id="list-compare" title="横向对比与推荐">📊 对比</button>
+            <button class="add-fab" id="list-add" title="录入商品">＋ 录入</button>
+          </div>
+        </div>
+        <div class="search-wrap">
+          <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="search" id="search-input" placeholder="搜索品牌、商品、平台" autocomplete="off">
+          <button class="search-clear" id="search-clear" aria-label="清空" hidden>✕</button>
+        </div>
+        <div class="section-head">
+          <h2>🔥 今日低价榜</h2>
+          <span class="section-note" id="update-note">价格随时变动</span>
+        </div>
+        <div class="lowprice-strip" id="lowprice-strip"></div>
+        <div class="section-head">
+          <h2>商品列表</h2>
+          <button class="sort-btn" id="sort-btn">
+            <span id="sort-label">默认排序</span>
+            <svg viewBox="0 0 24 24" width="16" height="16"><path d="M7 10l5 5 5-5z"/></svg>
+          </button>
+        </div>
+        <div class="product-list" id="list-product-list"></div>
+      </section>
+
+      <!-- ========== 商品详情 ========== -->
+      <section class="page" id="page-detail">
+        <button class="back-btn" id="detail-back">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          返回
+        </button>
+        <div id="detail-content"></div>
+      </section>
+
+      <!-- ========== 横向对比与推荐页 ========== -->
+      <section class="page" id="page-compare">
+        <button class="back-btn" id="compare-back">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          返回
+        </button>
+        <div class="list-heading">
+          <h1 id="compare-title">横向对比</h1>
+        </div>
+        <div id="compare-content"></div>
+      </section>
+
+      <!-- ========== 录入 / 编辑页 ========== -->
+      <section class="page" id="page-editor">
+        <button class="back-btn" id="editor-back">
+          <svg viewBox="0 0 24 24" width="20" height="20"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          返回
+        </button>
+        <div class="list-heading">
+          <h1 id="editor-title">录入商品</h1>
+        </div>
+        <div class="editor-notice">
+          ℹ️ 电商官网有反爬与跨域限制，App 无法直接抓取。可点下方按钮用<b>截图识别</b>自动填入，或手动填写你在各平台看到的价格。
+        </div>
+        <button type="button" class="ocr-entry-btn" id="ocr-entry">
+          <span class="ocr-entry-icon">📷</span>
+          <span class="ocr-entry-text"><b>截图识别商品</b><br>拍照 / 选图，自动提取品牌、规格、价格（首次需联网加载识别模型）</span>
+          <span class="ocr-entry-arrow">›</span>
+        </button>
+        <input type="file" id="ocr-file" accept="image/*" hidden>
+        <form id="editor-form" class="editor-form">
+          <input type="hidden" id="edit-id">
+          <div class="form-row">
+            <label>品类</label>
+            <select id="edit-category">
+              <option value="milk">🥛 奶粉</option>
+              <option value="diaper">👶 纸尿裤</option>
+              <option value="fuel">⛽ 加油</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>品牌</label>
+            <input type="text" id="edit-brand" placeholder="如：爱他美 / 帮宝适 / 中国石化" required>
+          </div>
+          <div class="form-row">
+            <label>商品名称</label>
+            <input type="text" id="edit-name" placeholder="如：卓萃 3 段 / 92# 汽油" required>
+          </div>
+          <div class="spec-builder">
+            <div class="spec-builder-title">📐 规格明细（自动算总量）</div>
+            <div class="spec-section-label">购买部分</div>
+            <div class="spec-grid">
+              <div class="form-item">
+                <label id="lbl-buy-packs">购买罐数</label>
+                <input type="number" id="buy-packs" step="0.01" min="0" placeholder="如：2">
+              </div>
+              <div class="form-item">
+                <label id="lbl-per-pack">单罐克重</label>
+                <div class="inline-unit">
+                  <input type="number" id="per-pack" step="0.01" min="0" placeholder="如：900">
+                  <span id="unit-per-pack">g</span>
+                </div>
+              </div>
+            </div>
+            <div class="spec-switch-row">
+              <span>显示赠送部分</span>
+              <div class="switch on" id="gift-switch"><span></span></div>
+            </div>
+            <div class="gift-section" id="gift-section">
+              <div class="spec-section-label">赠送部分</div>
+              <div class="spec-grid">
+                <div class="form-item">
+                  <label id="lbl-gift-packs">赠送罐数</label>
+                  <input type="number" id="gift-packs" step="0.01" min="0" placeholder="如：1">
+                </div>
+                <div class="form-item">
+                  <label id="lbl-gift-per">赠送单罐克重</label>
+                  <div class="inline-unit">
+                    <input type="number" id="gift-per" step="0.01" min="0" placeholder="同购买">
+                    <span id="unit-gift-per">g</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="spec-total">
+              <span>合计总数量</span>
+              <b id="spec-total-val">—</b>
+            </div>
+            <input type="hidden" id="edit-spec">
+            <input type="hidden" id="edit-qty">
+          </div>
+
+          <div class="platform-editor-head">
+            <span>各平台价格</span>
+            <button type="button" class="mini-add" id="add-platform-row">＋ 添加平台</button>
+          </div>
+          <div id="platform-rows" class="platform-rows"></div>
+
+          <button type="button" class="consumption-entry" id="editor-consumption">
+            ⚙️ 设置消耗参数（用于计算可使用天数）
+          </button>
+          <button type="submit" class="submit-btn" id="editor-submit">保存并提交比价</button>
+          <button type="button" class="delete-btn" id="editor-delete" hidden>删除这个商品</button>
+        </form>
+      </section>
+
+      <!-- ========== 收藏 ========== -->
+      <section class="page" id="page-favorites">
+        <div class="section-head"><h2>⭐ 我的收藏</h2></div>
+        <div class="product-list" id="favorites-list"></div>
+        <div class="empty-state" id="favorites-empty" hidden>
+          <div class="empty-icon">⭐</div>
+          <p>还没有收藏商品</p>
+          <span>在商品卡片右上角点击 ☆ 收藏</span>
+        </div>
+      </section>
+
+      <!-- ========== 我的 ========== -->
+      <section class="page" id="page-me">
+        <div class="me-header">
+          <div class="me-avatar">🐱</div>
+          <div>
+            <div class="me-name">喵喵生活用户</div>
+            <div class="me-desc">理性消费，精打细算</div>
+          </div>
+        </div>
+        <div class="me-card">
+          <button class="me-row" id="me-alerts">
+            <span class="me-row-icon">🔔</span>
+            <span class="me-row-label">降价提醒</span>
+            <span class="me-row-value" id="alert-count">0 个商品</span>
+            <span class="me-row-arrow">›</span>
+          </button>
+          <button class="me-row" id="me-my-products">
+            <span class="me-row-icon">✍️</span>
+            <span class="me-row-label">我录入的商品</span>
+            <span class="me-row-value" id="my-product-count">0 个</span>
+            <span class="me-row-arrow">›</span>
+          </button>
+          <button class="me-row" id="me-clear">
+            <span class="me-row-icon">🧹</span>
+            <span class="me-row-label">清除本地数据</span>
+            <span class="me-row-value">收藏 / 提醒 / 录入</span>
+            <span class="me-row-arrow">›</span>
+          </button>
+        </div>
+        <div class="info-card">
+          <h3>关于价格数据</h3>
+          <p>App <b>不内置任何商品</b>，所有价格都来自你手动录入，数据保存在本机浏览器。电商官网有反爬与跨域限制，前端无法直接抓取；接入真实价格需走官方开放平台或数据服务商。</p>
+          <p>技术接入：修改 <code>js/data.js</code> 的 <code>dataSource.fetchRemote()</code>，返回相同结构即可，界面无需改动。</p>
+          <p class="disclaimer">清除浏览器数据会同时清除你录入的商品，请留意备份。</p>
+        </div>
+        <div class="install-tip" id="install-tip">
+          <span>📲</span>
+          <div><b>安装到桌面</b><br>安卓浏览器菜单 → 「添加到主屏幕」，像 App 一样全屏使用</div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 底部导航 -->
+    <nav class="bottom-nav" id="bottom-nav">
+      <button class="nav-item active" data-page="home">
+        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+        <span>首页</span>
+      </button>
+      <button class="nav-item" data-page="favorites">
+        <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+        <span>收藏</span>
+      </button>
+      <button class="nav-item" data-page="me">
+        <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        <span>我的</span>
+      </button>
+    </nav>
+
+    <!-- 排序弹层 -->
+    <div class="sheet-mask" id="sort-mask" hidden>
+      <div class="sheet">
+        <div class="sheet-title">排序方式</div>
+        <button class="sheet-option" data-sort="default">默认排序</button>
+        <button class="sheet-option" data-sort="price-asc">价格从低到高</button>
+        <button class="sheet-option" data-sort="save-desc">省钱最多</button>
+        <button class="sheet-option" data-sort="time">最近更新</button>
+        <button class="sheet-cancel" id="sort-cancel">取消</button>
+      </div>
+    </div>
+
+    <!-- 提醒设置弹层 -->
+    <div class="sheet-mask" id="alert-mask" hidden>
+      <div class="sheet">
+        <div class="sheet-title">设置降价提醒</div>
+        <p class="sheet-hint" id="alert-hint"></p>
+        <label class="alert-label">当最低价低于（元）</label>
+        <input type="number" class="alert-input" id="alert-price" step="0.01" min="0">
+        <button class="sheet-primary" id="alert-save">保存提醒</button>
+        <button class="sheet-cancel" id="alert-cancel">取消</button>
+      </div>
+    </div>
+
+    <!-- 截图识别弹层 -->
+    <div class="sheet-mask" id="ocr-mask" hidden>
+      <div class="sheet ocr-sheet">
+        <div class="sheet-title">📷 截图识别</div>
+        <!-- 识别中 -->
+        <div id="ocr-loading" class="ocr-loading" hidden>
+          <div class="ocr-spinner"></div>
+          <div class="ocr-status" id="ocr-status">正在识别…</div>
+          <div class="ocr-tip">首次使用需下载中文识别模型，请稍候并保持联网</div>
+        </div>
+        <!-- 识别结果 -->
+        <div id="ocr-result" hidden>
+          <div class="ocr-section-label">识别到的字段（可修改后填入）</div>
+          <div class="ocr-field-grid">
+            <div class="form-row">
+              <label>品牌</label>
+              <input type="text" id="ocr-brand" class="form-input" placeholder="未识别到，可手动填">
+            </div>
+            <div class="form-row">
+              <label>商品名称</label>
+              <input type="text" id="ocr-name" class="form-input" placeholder="未识别到，可手动填">
+            </div>
+            <div class="form-row">
+              <label>规格数量（克 / 片）</label>
+              <input type="number" id="ocr-qty" class="form-input" step="0.01" min="0" placeholder="未识别到，可手动填">
+            </div>
+          </div>
+          <div class="ocr-section-label">识别到的价格（点选价格填入表单）</div>
+          <div class="ocr-price-chips" id="ocr-price-chips"></div>
+          <div class="ocr-raw-wrap">
+            <div class="ocr-raw-title">识别原文</div>
+            <div class="ocr-raw" id="ocr-raw"></div>
+          </div>
+        </div>
+        <div class="ocr-actions" id="ocr-actions" hidden>
+          <button class="sheet-cancel" id="ocr-recapture">重新选图</button>
+          <button class="sheet-primary" id="ocr-apply">填入表单</button>
+        </div>
+        <button class="sheet-cancel" id="ocr-cancel">取消</button>
+      </div>
+    </div>
+
+    <!-- 消耗参数弹层（全局通用，按品类） -->
+    <div class="sheet-mask" id="consumption-mask" hidden>
+      <div class="sheet">
+        <div class="sheet-title">⚙️ 消耗参数设置</div>
+        <div class="cons-tabs" id="cons-tabs">
+          <button class="cons-tab active" data-cat="milk">🥛 奶粉</button>
+          <button class="cons-tab" data-cat="diaper">👶 纸尿裤</button>
+          <button class="cons-tab" data-cat="fuel">⛽ 加油</button>
+        </div>
+        <!-- 奶粉 -->
+        <div class="cons-panel" data-panel="milk">
+          <div class="form-row"><label>每日喂养顿数</label><input type="number" class="cons-input" id="cons-milk-times" step="0.1" min="0" placeholder="如：3"></div>
+          <div class="form-row"><label>每顿喂养勺数</label><input type="number" class="cons-input" id="cons-milk-spoons" step="0.1" min="0" placeholder="如：5"></div>
+          <div class="form-row"><label>每勺奶粉克数(g)</label><input type="number" class="cons-input" id="cons-milk-gram" step="0.1" min="0" placeholder="如：4.5"></div>
+          <div class="cons-formula">每日消耗克重 = 顿数 × 勺数 × 每勺克数<br>可食用天数 = 合计总克重 ÷ 每日消耗克重</div>
+        </div>
+        <!-- 纸尿裤 -->
+        <div class="cons-panel" data-panel="diaper" hidden>
+          <div class="form-row"><label>每日使用片数</label><input type="number" class="cons-input" id="cons-diaper-pcs" step="0.1" min="0" placeholder="如：8"></div>
+          <div class="cons-formula">可食用天数 = 合计总片数 ÷ 每日使用片数</div>
+        </div>
+        <!-- 加油 -->
+        <div class="cons-panel" data-panel="fuel" hidden>
+          <div class="form-row"><label>每日消耗升数</label><input type="number" class="cons-input" id="cons-fuel-liters" step="0.01" min="0" placeholder="如：2"></div>
+          <div class="cons-formula">可使用天数 = 1 升单价参考 ÷ 每日消耗升数（按每升计算）</div>
+        </div>
+        <button class="sheet-primary" id="cons-save">保存参数</button>
+        <button class="sheet-cancel" id="cons-cancel">取消</button>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- 安装提示条 -->
+    <div class="install-banner" id="install-banner" hidden>
+      <span class="install-banner-icon">📲</span>
+      <div class="install-banner-text"><b>安装喵喵生活到桌面</b><br>方便随时比价记账，支持离线打开</div>
+      <button class="install-banner-btn" id="install-btn">安装</button>
+      <button class="install-banner-close" id="install-close">✕</button>
+    </div>
+  </div>
+
+  <script src="js/calc.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/ocr.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
